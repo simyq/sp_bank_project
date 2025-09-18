@@ -9,13 +9,27 @@ Main goal of the project is to work with different data, connected with bank acc
 - [Processing](src/processing.py)
 - [Widget](src/widget.py)
 
-## Installation and usage
-Temporarily no way to install and use the project
+## Installation:
 
-## Development
+### Prerequisites
+- Python 3.13+
+- Poetry 1.2+
 
-### Requirements
-All the required packages and environments are described in [pyproject.toml](pyproject.toml)  
+All the required packages (linters and other dependencies) and environments are described in [pyproject.toml](pyproject.toml)  
+
+1. Clone repository:
+```
+git clone https://github.com/simyq/sp_bank_project
+```
+2. Install and activate virtual environment:
+```
+poetry install
+poetry shell
+```
+3. Run main.py
+```
+python main.py
+```
 
 ## Testing
 Currently all the manual tests are in [Main](main.py)
@@ -24,7 +38,7 @@ Currently all the manual tests are in [Main](main.py)
 People are always asking me if i know Tyler Durden. No, I do not.
 
 ### Why and what is this project for?
-Jus to exist.
+Just to exist.
 
 ## To do
 - Do some stuff
