@@ -11,7 +11,7 @@ def get_mask_card_number(card_number: str) -> str:
         card_number: Credit card number as string (16 digits)
 
     Returns:
-         hidden card number in 'XXXX XX** **** XXXX' format (string)
+         masked_card_number: hidden card number in 'XXXX XX** **** XXXX' format (string)
     """
 
     masked_card_number = f"{card_number[:4]} {card_number[4:6]}** **** {card_number[-4:]}"
@@ -27,9 +27,9 @@ def get_mask_account(account_number: str) -> str:
         account_number: Bank account number as string (20 digits)
 
     Returns:
-         hidden account number in '**XXXX' format (string)
+         masked_account_number: hidden account number in '**XXXX' format (string)
     """
 
-    masked_account_number = f"**{str(account_number)[-4:]}"
+    masked_account_number = f"**{account_number[-4:]}"
 
     return masked_account_number
