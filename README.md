@@ -4,10 +4,19 @@ Main goal of the project is to work with different data, connected with bank acc
 (Development in progress)
 
 ## Content (main modules)
-- [Main](main.py)
+
+### [Main](main.py)
+
+### [src](src/)
 - [Masks](src/masks.py)
 - [Processing](src/processing.py)
 - [Widget](src/widget.py)
+
+### [tests](tests/)
+- [conftest.py](tests/conftest.py)
+- [test_masks.py](tests/test_masks.py)
+- [test_processing.py](tests/test_processing.py)
+- [test_widget.py](tests/test_widget.py)
 
 ## Installation:
 
