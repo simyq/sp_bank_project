@@ -3,7 +3,7 @@ name = "bank-project"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
-readme = "README.md"  # file is empty
+readme = "README.md"
 packages = [{include = "bank_project", from = "src"}]
 
 
@@ -16,6 +16,11 @@ black = "^25.1.0"
 isort = "^6.0.1"
 flake8 = "^7.3.0"
 mypy = "^1.18.1"
+
+
+[tool.poetry.group.tests.dependencies]
+pytest = "^8.4.2"
+pytest-cov = "^7.0.0"
 
 
 [build-system]
@@ -69,3 +74,12 @@ exclude = """
   |\\.idea
 )/
 """
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+
+[tool.coverage.run]
+source = ["src"]
