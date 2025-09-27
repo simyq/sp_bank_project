@@ -32,48 +32,48 @@ build-backend = "poetry.core.masonry.api"
 disallow_untyped_defs = true
 warn_return_any = true
 namespace_packages = true
-exclude = "venv"
+exclude = ["venv", "tests", ".venv"]
 mypy_path = "src"
 files = "*.py"
 
 
 [tool.black]
 line-length = 119
+skip-string-normalization = false
 include = '\.pyi?$'
-exclude = """
+exclude = '''
 /(
-\\.git
-  | \\.hg
-  | \\.mypy_cache
-  | \\.tox
-  | \\.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  |\\.gitignore
-  |\\.idea
-)/
-"""
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | \.gitignore
+    | \.idea
+    | tests/
+).*$
+'''
 
 
 [tool.isort]
 line_length = 119
-exclude = """
-/(
-\\.git
-  | \\.hg
-  | \\.mypy_cache
-  | \\.tox
-  | \\.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  |\\.gitignore
-  |\\.idea
-)/
-"""
+skip = [
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".tox",
+    ".venv",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    ".gitignore",
+    ".idea"
+]
 
 
 [tool.pytest.ini_options]
