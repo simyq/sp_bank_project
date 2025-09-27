@@ -65,7 +65,8 @@ def get_date(date: Any) -> str:
 
     Returns:
         formatted_date (str) in format DD.MM.YYYY
-        or 'Invalid input' if validation fails (not ISO-format or string type given)
+
+    Raises: 'Invalid input' if validation fails (not ISO-format or string type given)
     """
 
     if not isinstance(date, str):
