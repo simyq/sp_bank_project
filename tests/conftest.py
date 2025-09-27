@@ -134,10 +134,10 @@ def edge_case_bank_data(request):
     """Returns edge cases with expected results"""
     return request.param
 
-"""
-Fixtures for processing.py tests
-"""
 
+'''
+Fixtures for processing.py tests
+'''
 
 # Basic tests data
 
@@ -226,3 +226,115 @@ def invalid_sort_date_param(request):
 ])
 def edge_sort_date_data(request):
     return request.param
+
+
+'''
+Fixtures for test_generators.py
+'''
+
+@pytest.fixture
+def sample_gen_transactions():
+    """Fixture with transactions data"""
+    return [
+        {
+            "id": 1,
+            "state": "EXECUTED",
+            "date": "2018-01-01T00:00:00.000000",
+            "operationAmount": {
+                "amount": "100.00",
+                "currency": {
+                    "name": "US Dollar",
+                    "code": "USD"
+                }
+            },
+            "description": "Перевод организации",
+            "from": "Счет 10000000000000000001",
+            "to": "Счет 20000000000000000002"
+        },
+        {
+            "id": 2,
+            "state": "EXECUTED",
+            "date": "2018-01-02T00:00:00.000000",
+            "operationAmount": {
+                "amount": "200.00",
+                "currency": {
+                    "name": "Euro",
+                    "code": "EUR"
+                }
+            },
+            "description": "Перевод со счета на счет",
+            "from": "Счет 10000000000000000001",
+            "to": "Счет 30000000000000000003"
+        },
+        {
+            "id": 3,
+            "state": "CANCELED",
+            "date": "2018-01-03T00:00:00.000000",
+            "operationAmount": {
+                "amount": "300.00",
+                "currency": {
+                    "name": "US Dollar",
+                    "code": "USD"
+                }
+            },
+            "description": "Перевод с карты на карту",
+            "from": "Карта 1000000000000001",
+            "to": "Карта 2000000000000002"
+        },
+        {
+            "id": 4,
+            "state": "EXECUTED",
+            "date": "2018-01-04T00:00:00.000000",
+            "operationAmount": {
+                "amount": "400.00",
+                "currency": {
+                    "name": "Russian Ruble",
+                    "code": "RUB"
+                }
+            },
+            "description": "Оплата услуг",
+            "from": "Карта 3000000000000003",
+            "to": "Счет 40000000000000000004"
+        }
+    ]
+
+@pytest.fixture
+def empty_transactions():
+    """Fixture for empty list of transactions"""
+    return []
+
+@pytest.fixture
+def transactions_with_same_currency():
+    """Fixture for the only currency cases"""
+    return [
+        {
+            "id": 1,
+            "state": "EXECUTED",
+            "date": "2018-01-01T00:00:00.000000",
+            "operationAmount": {
+                "amount": "100.00",
+                "currency": {
+                    "name": "US Dollar",
+                    "code": "USD"
+                }
+            },
+            "description": "Перевод 1",
+            "from": "Счет 1",
+            "to": "Счет 2"
+        },
+        {
+            "id": 2,
+            "state": "EXECUTED",
+            "date": "2018-01-02T00:00:00.000000",
+            "operationAmount": {
+                "amount": "200.00",
+                "currency": {
+                    "name": "US Dollar",
+                    "code": "USD"
+                }
+            },
+            "description": "Перевод 2",
+            "from": "Счет 3",
+            "to": "Счет 4"
+        }
+    ]
