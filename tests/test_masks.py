@@ -3,7 +3,8 @@ Tests for masks.py
 """
 
 import pytest
-from masks import get_mask_card_number, get_mask_account
+
+from masks import get_mask_account, get_mask_card_number
 
 # Valid cases tests (16-digit string for get_mask_card and 20-digit string for get_mask_account)
 

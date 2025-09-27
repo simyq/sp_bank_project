@@ -12,26 +12,26 @@ Tests for filter_by_currency
 
 # Valid cases
 @pytest.mark.parametrize("currency", ["USD", "EUR", "RUB", "BYR"])
-def test_filter_by_currency_parametrized(sample_transactions, currency):
+def test_filter_by_currency_parametrized(sample_gen_transactions, currency):
     """Parametrised test for different currencies"""
-    filtered = list(filter_by_currency(sample_transactions, currency))
+    filtered = list(filter_by_currency(sample_gen_transactions, currency))
     assert all(t["operationAmount"]["currency"]["code"] == currency for t in filtered)
 
 
-def test_filter_by_currency_case_insensitive(sample_transactions):
+def test_filter_by_currency_case_insensitive(sample_gen_transactions):
     """Tests for case-insensitivity"""
-    usd_lower = list(filter_by_currency(sample_transactions, "usd"))
-    usd_upper = list(filter_by_currency(sample_transactions, "USD"))
-    usd_mixed = list(filter_by_currency(sample_transactions, "UsD"))
+    usd_lower = list(filter_by_currency(sample_gen_transactions, "usd"))
+    usd_upper = list(filter_by_currency(sample_gen_transactions, "USD"))
+    usd_mixed = list(filter_by_currency(sample_gen_transactions, "UsD"))
 
     assert usd_lower == usd_upper == usd_mixed
     assert len(usd_lower) == 2
 
 
-def test_filter_by_currency_multiple_currencies(sample_transactions):
+def test_filter_by_currency_multiple_currencies(sample_gen_transactions):
     """Tests for different currencies"""
-    eur_transactions = list(filter_by_currency(sample_transactions, "EUR"))
-    rub_transactions = list(filter_by_currency(sample_transactions, "RUB"))
+    eur_transactions = list(filter_by_currency(sample_gen_transactions, "EUR"))
+    rub_transactions = list(filter_by_currency(sample_gen_transactions, "RUB"))
 
     assert len(eur_transactions) == 1
     assert eur_transactions[0]["id"] == 2
@@ -42,24 +42,24 @@ def test_filter_by_currency_multiple_currencies(sample_transactions):
     assert rub_transactions[0]["operationAmount"]["currency"]["code"] == "RUB"
 
 
-def test_filter_by_currency_returns_filter_object(sample_transactions):
+def test_filter_by_currency_returns_filter_object(sample_gen_transactions):
     """Test for result type"""
-    result = filter_by_currency(sample_transactions, "USD")
+    result = filter_by_currency(sample_gen_transactions, "USD")
 
     assert isinstance(result, filter)
 
 # Edge cases
-def test_filter_by_currency_empty_result(sample_transactions):
+def test_filter_by_currency_empty_result(sample_gen_transactions):
     """Inexistent currency test"""
-    gbp_transactions = list(filter_by_currency(sample_transactions, "GBP"))
+    gbp_transactions = list(filter_by_currency(sample_gen_transactions, "GBP"))
 
     assert len(gbp_transactions) == 0
     assert gbp_transactions == []
 
 
-def test_filter_by_currency_valid_case(sample_transactions):
+def test_filter_by_currency_valid_case(sample_gen_transactions):
     """The only currency test"""
-    usd_filter = filter_by_currency(sample_transactions, "USD")
+    usd_filter = filter_by_currency(sample_gen_transactions, "USD")
     usd_transactions = list(usd_filter)
 
     assert len(usd_transactions) == 2
@@ -93,10 +93,10 @@ def test_filter_by_currency_none_transactions():
         list(filter_by_currency(None, "USD"))
 
 
-def test_filter_by_currency_none_currency(sample_transactions):
+def test_filter_by_currency_none_currency(sample_gen_transactions):
     """Test for None instead of currency"""
     with pytest.raises(AttributeError):
-        list(filter_by_currency(sample_transactions, None))
+        list(filter_by_currency(sample_gen_transactions, None))
 
 
 def test_filter_by_currency_invalid_transactions_structure():
@@ -117,8 +117,8 @@ Tests for get_transaction_descriptions
 # Valid cases
 
 
-def test_transaction_descriptions_valid_case(sample_transactions):
-    descriptions = list(get_transaction_descriptions(sample_transactions))
+def test_transaction_descriptions_valid_case(sample_gen_transactions):
+    descriptions = list(get_transaction_descriptions(sample_gen_transactions))
 
     expected_descriptions = [
         "Перевод организации",
@@ -128,12 +128,12 @@ def test_transaction_descriptions_valid_case(sample_transactions):
     ]
 
     assert descriptions == expected_descriptions
-    assert len(descriptions) == len(sample_transactions)
+    assert len(descriptions) == len(sample_gen_transactions)
 
 
-def test_transaction_descriptions_returns_generator(sample_transactions):
+def test_transaction_descriptions_returns_generator(sample_gen_transactions):
     """Test for result type"""
-    result = get_transaction_descriptions(sample_transactions)
+    result = get_transaction_descriptions(sample_gen_transactions)
 
     assert isinstance(result, Generator)
 
@@ -149,9 +149,9 @@ def test_transaction_descriptions_empty_list(empty_transactions):
     assert descriptions == []
 
 
-def test_transaction_descriptions_lazy_evaluation(sample_transactions):
+def test_transaction_descriptions_lazy_evaluation(sample_gen_transactions):
     """Lazy counting test"""
-    generator = get_transaction_descriptions(sample_transactions)
+    generator = get_transaction_descriptions(sample_gen_transactions)
 
     # Берем только первые два описания
     first = next(generator)
