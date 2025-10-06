@@ -18,6 +18,7 @@ Also contains generator for creating card number
 (Also might be updated by list (or file) with cards, that already exist)
 Unused function in comments at the end of the module
 might be used to work with string format input for card number generating
+- [Decorators](src/decorators.py) — Module with decorators, currently contains @log decorator for storing executions of the functions (both successful and failed) in special file or outputting the result directly to the console
 
 ### [tests](tests/)
 - [conftest.py](tests/conftest.py)
@@ -25,6 +26,7 @@ might be used to work with string format input for card number generating
 - [test_processing.py](tests/test_processing.py)
 - [test_widget.py](tests/test_widget.py)
 - [test_generators.py](tests/test_generators.py)
+- [test_decorators.py](tests/test_decorators.py)
 
 ## Installation:
 

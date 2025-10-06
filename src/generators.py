@@ -32,7 +32,7 @@ def get_transaction_descriptions(transactions: list[dict]) -> Generator:
     :return: Generator object: Generator with transactions descriptions
     """
 
-    description_generator =  (transaction["description"] for transaction in transactions)
+    description_generator = (transaction["description"] for transaction in transactions)
     yield from description_generator
 
 
