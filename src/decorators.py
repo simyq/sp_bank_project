@@ -21,8 +21,8 @@ def log(filename: Optional[str] = None) -> Callable:
         """
 
         if filename:
-            with open(filename, 'a', encoding='utf-8') as f:
-                f.write(message + '\n')
+            with open(filename, "a", encoding="utf-8") as f:
+                f.write(message + "\n")
         else:
             print(message)
 
@@ -34,13 +34,14 @@ def log(filename: Optional[str] = None) -> Callable:
 
             try:
                 result = func(*args, **kwargs)
-                success_message = f'{function_name} successfully logged.'
+                success_message = f"{function_name} successfully logged."
                 write_log(success_message)
                 return result
 
             except Exception as e:
-                error_message = \
-                    f'{function_name} failed to log. {type(e).__name__}: {str(e)}. inputs: {args}; {kwargs}'
+                error_message = (
+                    f"{function_name} failed to log. {type(e).__name__}: {str(e)}. inputs: {args}; {kwargs}"
+                )
                 write_log(error_message)
                 raise
 
@@ -58,7 +59,6 @@ def open_file_safely(func: Callable) -> Callable:
     """
 
     @wraps(func)
-
     def wrapper(filename: Optional[str] = None) -> Any:
         """
         Inner function for execution of the decorated function.
