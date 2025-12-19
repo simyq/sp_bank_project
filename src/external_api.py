@@ -4,9 +4,10 @@ import os
 
 import requests
 from dotenv import load_dotenv
+from typing import Any
 
 
-def convert_to_rubles(transaction):
+def convert_to_rubles(transaction: dict) -> Any:
     """
     Takes a transaction, finds transaction's amount from json and converts it to RUB
     :param transaction: JSON-formatted transaction from file
