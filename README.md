@@ -20,7 +20,7 @@ Unused function in comments at the end of the module
 might be used to work with string format input for card number generating
 - [Decorators](src/decorators.py) — Module with decorators
 - [utils.py](src/utils.py) — Module for reading and working with transactions in JSON-format
-- [external_api.py](src/external_api.py) — Module for requests, converts given transaction's amount to RUB
+- [external_api.py](src/external_api.py) — Module for requests, converts given transaction's amount to RUB if necessary
 
 ### [tests](tests/)
 - [conftest.py](tests/conftest.py)
