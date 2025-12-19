@@ -2,10 +2,14 @@
 Tests for module decorators.py
 """
 
-import pytest
 import os
+from functools import wraps
+from typing import Callable, Optional
+from unittest.mock import Mock, patch
 
-from decorators import log
+import pytest
+
+from decorators import log, open_file_safely
 
 '''Test functions for decorator @log'''
 
@@ -187,3 +191,182 @@ def teardown_module():
     """Clean up test files after tests"""
     if os.path.exists("test_log.txt"):
         os.remove("test_log.txt")
+
+
+'''Test functions for decorator @open_file_safely'''
+
+
+# Mock function to use with decorator
+def sample_read_function(filename: str) -> list:
+    """Sample function that would read a file and return data"""
+    return ["data1", "data2", "data3"]
+
+
+# Decorated function for testing
+@open_file_safely
+def decorated_read_function(filename: Optional[str] = None) -> list:
+    """Decorated version of sample function"""
+    return sample_read_function(filename)
+
+
+# Valid cases
+def test_open_file_safely_valid_file():
+    """Test with valid existing non-empty file"""
+    with patch('pathlib.Path.exists') as mock_exists, \
+            patch('pathlib.Path.is_file') as mock_is_file, \
+            patch('pathlib.Path.stat') as mock_stat:
+        # Mock all checks to pass
+        mock_exists.return_value = True
+        mock_is_file.return_value = True
+        mock_stat.return_value = Mock(st_size=100)  # Non-empty file
+
+        # Mock the actual function
+        mock_func = Mock(return_value=["test", "data"])
+        decorated_func = open_file_safely(mock_func)
+
+        result = decorated_func("valid_file.txt")
+
+        # Should call the original function
+        mock_func.assert_called_once_with("valid_file.txt")
+        assert result == ["test", "data"]
+
+
+def test_open_file_safely_returns_empty_list_on_none():
+    """Test that returns empty list when filename is None"""
+    mock_func = Mock(return_value=["data"])
+    decorated_func = open_file_safely(mock_func)
+
+    result = decorated_func(None)
+
+
+# Edge cases
+def test_open_file_safely_file_does_not_exist():
+    """Test when file does not exist"""
+    with patch('pathlib.Path.exists') as mock_exists:
+        mock_exists.return_value = False
+
+        mock_func = Mock(return_value=["data"])
+        decorated_func = open_file_safely(mock_func)
+
+        result = decorated_func("nonexistent.txt")
+
+        mock_func.assert_not_called()
+        assert result == []
+
+
+def test_open_file_safely_path_is_directory_not_file():
+    """Test when path exists but is a directory, not a file"""
+    with patch('pathlib.Path.exists') as mock_exists, \
+            patch('pathlib.Path.is_file') as mock_is_file:
+        mock_exists.return_value = True
+        mock_is_file.return_value = False  # It's a directory
+
+        mock_func = Mock(return_value=["data"])
+        decorated_func = open_file_safely(mock_func)
+
+        result = decorated_func("/some/directory")
+
+        mock_func.assert_not_called()
+        assert result == []
+
+
+def test_open_file_safely_empty_file():
+    """Test when file exists but is empty (size = 0)"""
+    with patch('pathlib.Path.exists') as mock_exists, \
+            patch('pathlib.Path.is_file') as mock_is_file, \
+            patch('pathlib.Path.stat') as mock_stat:
+        mock_exists.return_value = True
+        mock_is_file.return_value = True
+        mock_stat.return_value = Mock(st_size=0)  # Empty file
+
+        mock_func = Mock(return_value=["data"])
+        decorated_func = open_file_safely(mock_func)
+
+        result = decorated_func("empty.txt")
+
+        mock_func.assert_not_called()
+        assert result == []
+
+
+def test_open_file_safely_with_empty_string_filename():
+    """Test with empty string as filename"""
+    mock_func = Mock(return_value=["data"])
+    decorated_func = open_file_safely(mock_func)
+
+    result = decorated_func("")
+
+    # Empty string is truthy, so will check Path("") which doesn't exist
+    with patch('pathlib.Path.exists') as mock_exists:
+        mock_exists.return_value = False
+        mock_func.assert_not_called()
+
+    assert result == []
+
+
+# Test with actual decorated function
+def test_decorated_read_function_valid():
+    """Test the actual decorated function with valid file"""
+    with patch('pathlib.Path.exists') as mock_exists, \
+            patch('pathlib.Path.is_file') as mock_is_file, \
+            patch('pathlib.Path.stat') as mock_stat, \
+            patch.object(__import__(__name__), 'sample_read_function') as mock_read:
+        mock_exists.return_value = True
+        mock_is_file.return_value = True
+        mock_stat.return_value = Mock(st_size=100)
+        mock_read.return_value = ["real", "data"]
+
+        result = decorated_read_function("real_file.txt")
+
+        mock_read.assert_called_once_with("real_file.txt")
+        assert result == ["real", "data"]
+
+
+def test_decorated_read_function_invalid():
+    """Test the actual decorated function with invalid file"""
+    with patch('pathlib.Path.exists') as mock_exists:
+        mock_exists.return_value = False
+
+        result = decorated_read_function("fake_file.txt")
+
+        assert result == []
+
+
+# Test with different return types
+def test_open_file_safely_with_different_return_types():
+    """Test that decorator handles different return types from wrapped function"""
+
+    @open_file_safely
+    def return_dict(filename: str) -> dict:
+        return {"key": "value"}
+
+    @open_file_safely
+    def return_string(filename: str) -> str:
+        return "result"
+
+    with patch('pathlib.Path.exists') as mock_exists, \
+            patch('pathlib.Path.is_file') as mock_is_file, \
+            patch('pathlib.Path.stat') as mock_stat:
+        mock_exists.return_value = True
+        mock_is_file.return_value = True
+        mock_stat.return_value = Mock(st_size=100)
+
+        dict_result = return_dict("test.txt")
+        string_result = return_string("test.txt")
+
+        assert dict_result == {"key": "value"}
+        assert string_result == "result"
+
+
+def test_open_file_safely_invalid_path_object_creation():
+    """Test when Path() constructor itself raises an exception"""
+    with patch('pathlib.Path') as mock_path_class:
+        mock_path_class.side_effect = ValueError("Invalid path")
+
+        mock_func = Mock(return_value=["data"])
+        decorated_func = open_file_safely(mock_func)
+
+        # Should handle exception from Path constructor
+        result = decorated_func("invalid:\0path.txt")
+
+        mock_func.assert_not_called()
+        assert result == []
