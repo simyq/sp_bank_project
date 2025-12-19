@@ -2,9 +2,11 @@
 Tests for generators.py
 """
 
-import pytest
 from typing import Generator
-from generators import filter_by_currency, get_transaction_descriptions, card_number_generator
+
+import pytest
+
+from generators import card_number_generator, filter_by_currency, get_transaction_descriptions
 
 '''
 Tests for filter_by_currency

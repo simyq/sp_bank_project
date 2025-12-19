@@ -12,7 +12,7 @@ def filter_by_state(list_with_dicts: list[dict], state: str = "EXECUTED") -> lis
     :return: filtered_list_by_state: items from primary list if they have given state as value in dictionary['state']
     """
 
-    filtered_list_by_state = [item for item in list_with_dicts if item['state'] == state]
+    filtered_list_by_state = [item for item in list_with_dicts if item["state"] == state]
 
     return filtered_list_by_state
 
@@ -26,6 +26,6 @@ def sort_by_date(list_with_dicts: list[dict], descending: bool = True) -> list:
     :return: sorted_list_by_date: sorted given list by date depending on given order
     """
 
-    sorted_list_by_date = sorted(list_with_dicts, key=lambda item: item['date'], reverse=descending)
+    sorted_list_by_date = sorted(list_with_dicts, key=lambda item: item["date"], reverse=descending)
 
     return sorted_list_by_date
