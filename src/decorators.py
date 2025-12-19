@@ -3,8 +3,8 @@ Module with decorators
 """
 
 from functools import wraps
-from typing import Any, Callable, Optional
 from pathlib import Path
+from typing import Any, Callable, Optional
 
 
 def log(filename: Optional[str] = None) -> Callable:

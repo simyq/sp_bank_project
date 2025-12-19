@@ -3,10 +3,11 @@ Tests for module decorators.py
 """
 
 import os
-import pytest
-from unittest.mock import Mock, patch
-from typing import Optional, Callable
 from functools import wraps
+from typing import Callable, Optional
+from unittest.mock import Mock, patch
+
+import pytest
 
 from decorators import log, open_file_safely
 

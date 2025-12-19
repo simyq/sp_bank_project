@@ -37,6 +37,8 @@ might be used to work with string format input for card number generating
 ### Prerequisites
 - Python 3.13+
 - Poetry 1.2+
+- python-dotenv = 1.2.1
+- requests = 2.32.5
 
 All the required packages (linters and other dependencies) and environments are described in [pyproject.toml](pyproject.toml)  
 

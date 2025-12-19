@@ -13,15 +13,15 @@ credit_card_names = ["visa", "maestro", "mastercard", "белкарт", "мир"
 
 def mask_account_card(bank_data: Any) -> str:
     """
-        Masks personal bank data (account number and bank card number)
+    Masks personal bank data (account number and bank card number)
 
-        Args:
-            bank_data must be a string: personal bank data in (either bank account number or bank card number)
-            in format 'Счет 73654108430135874305' or 'Visa Platinum 7000792289606361'
+    Args:
+        bank_data must be a string: personal bank data in (either bank account number or bank card number)
+        in format 'Счет 73654108430135874305' or 'Visa Platinum 7000792289606361'
 
-        Returns:
-            str: masked personal bank data (account number and bank card number)
-            or raises an Exception if validation fails
+    Returns:
+        str: masked personal bank data (account number and bank card number)
+        or raises an Exception if validation fails
     """
 
     if not isinstance(bank_data, str):
@@ -41,9 +41,9 @@ def mask_account_card(bank_data: Any) -> str:
         hidden_bank_data = f"{' '.join(modified_bank_data[:-1]).title()} {masked_card_number}"
 
     elif (
-            modified_bank_data[0] in ("счет", "счёт")
-            and len(modified_bank_data[-1]) == 20
-            and modified_bank_data[-1].isdigit()
+        modified_bank_data[0] in ("счет", "счёт")
+        and len(modified_bank_data[-1]) == 20
+        and modified_bank_data[-1].isdigit()
     ):
         bank_account_number = modified_bank_data[-1]
         masked_account_number = get_mask_account(bank_account_number)
