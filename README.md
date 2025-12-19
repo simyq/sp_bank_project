@@ -18,7 +18,9 @@ Also contains generator for creating card number
 (Also might be updated by list (or file) with cards, that already exist)
 Unused function in comments at the end of the module
 might be used to work with string format input for card number generating
-- [Decorators](src/decorators.py) — Module with decorators, currently contains @log decorator for storing executions of the functions (both successful and failed) in special file or outputting the result directly to the console
+- [Decorators](src/decorators.py) — Module with decorators
+- [utils.py](src/utils.py) — Module for reading and working with transactions in JSON-format
+- [external_api.py](src/external_api.py) — Module for requests, converts given transaction's amount to RUB
 
 ### [tests](tests/)
 - [conftest.py](tests/conftest.py)
@@ -27,6 +29,8 @@ might be used to work with string format input for card number generating
 - [test_widget.py](tests/test_widget.py)
 - [test_generators.py](tests/test_generators.py)
 - [test_decorators.py](tests/test_decorators.py)
+- [test_utils.py](tests/test_utils.py)
+- [test_external_api.py](tests/test_external_api.py)
 
 ## Installation:
 
@@ -65,10 +69,13 @@ We are committed to maintaining high code quality. The current test coverage sta
 ```
 File	            Statements	Missing	Excluded    Coverage
 src/__init__.py	        0           0       0           100%
+src/decorators.py	 	34	        0	    0	 	    100%
+src/external_api.py	 	19	        0	    0	 	    100%
 src/masks.py	        6           0       0           100%
 src/processing.py       6           0       0           100%
 src/widget.py	        24          0       0           100%
 src/generators          22          0       0           100%
+src/utils.py	 	    12	        0      	0	 	    100%
 Total	                58          0       0           100%
 ```
 
