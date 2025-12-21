@@ -21,7 +21,7 @@ def read_json_file(json_file: Optional[str] = None) -> list:
         try:
             data = json.load(file)
 
-        except (json.JSONDecodeError, OSError, UnicodeDecodeError):
+        except (json.JSONDecodeError, OSError, UnicodeDecodeError, FileNotFoundError):
             return []
 
     return data if isinstance(data, list) else []
