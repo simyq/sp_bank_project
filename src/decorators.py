@@ -1,5 +1,5 @@
 """
-Module with decorators
+Module with decorators, unused decorator open_file_safely may be useful for working with opening files
 """
 
 from functools import wraps
