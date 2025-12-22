@@ -41,24 +41,25 @@ def read_json_file(json_file: Optional[str] = None) -> list:
                     data = json.load(file)
 
                     if isinstance(data, list):
-                        logger.debug(f"Data is valid, returning {len(data)} records")
+                        logger.debug("Data is valid")
 
                     else:
                         logger.debug(message_empty_list.format("Data is invalid"))
 
                 except Exception as e:
-                    logger.error(
+                    logger.critical(
                         message_empty_list.format(f'An error occurred while reading file: "{path_to_json_file}". {e}')
                     )
 
                 finally:
+                    logger.info(f", returning {len(data)} records")
                     return data
         else:
-            logger.warning(message_empty_list.format(f'JSON-file "{json_file}" does not exist or is empty'))
+            logger.error(message_empty_list.format(f'JSON-file "{json_file}" does not exist or is empty'))
             return data
 
     else:
-        logger.debug(
+        logger.error(
             message_empty_list.format(f"No arguments have been given or given arguments {json_file} are invalid")
         )
         return data
