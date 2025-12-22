@@ -1,10 +1,10 @@
 """Module for transaction converting, working with API"""
 
 import os
+from typing import Any
 
 import requests
 from dotenv import load_dotenv
-from typing import Any
 
 
 def convert_to_rubles(transaction: dict) -> Any:
