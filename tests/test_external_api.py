@@ -1,8 +1,9 @@
 """Tests for external_api"""
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
 import os
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from external_api import convert_to_rubles
 

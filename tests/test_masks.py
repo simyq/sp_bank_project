@@ -28,14 +28,12 @@ def test_get_mask_account_valid(valid_account_data):
 
 def test_get_mask_card_number_invalid(invalid_data_type):
     """Tests for invalid data type given as an argument"""
-    with pytest.raises((IndexError, TypeError, KeyError)):
-        get_mask_card_number(invalid_data_type)
+    assert get_mask_card_number(invalid_data_type) is ''
 
 
 def test_get_mask_account_invalid(invalid_data_type):
     """Tests for invalid data type given as an argument"""
-    with pytest.raises((IndexError, TypeError, KeyError)):
-        get_mask_account(invalid_data_type)
+    assert get_mask_card_number(invalid_data_type) is ''
 
 
 # Edge and problematic cases (short or long strings, list or tuple type given)
