@@ -50,30 +50,30 @@ def log(filename: Optional[str] = None) -> Callable:
     return outer_wrapper
 
 
-def open_file_safely(func: Callable) -> Callable:
-    """
-    Decorator function. Checks if path to file and file are valid to read
-    (if path is not given, if file is not found, is broken (or is not file), or is empty).
-    :param func: function, which takes path as an argument
-    :return: wrapper: result of inner function execution or an empty list
-    """
-
-    @wraps(func)
-    def wrapper(filename: Optional[str] = None) -> Any:
-        """
-        Inner function for execution of the decorated function.
-        :param filename: str - path of the file to check
-        :return: Any type of the executed function result or an empty list
-        """
-
-        res = []
-
-        if filename:
-            path = Path(filename)
-
-            if path.exists() and path.is_file() and path.stat().st_size > 0:
-                res = func(filename)
-
-        return res
-
-    return wrapper
+# def open_file_safely(func: Callable) -> Callable:
+#     """
+#     Decorator function. Checks if path to file and file are valid to read
+#     (if path is not given, if file is not found, is broken (or is not file), or is empty).
+#     :param func: function, which takes path as an argument
+#     :return: wrapper: result of inner function execution or an empty list
+#     """
+#
+#     @wraps(func)
+#     def wrapper(filename: Optional[str] = None) -> Any:
+#         """
+#         Inner function for execution of the decorated function.
+#         :param filename: str - path of the file to check
+#         :return: Any type of the executed function result or an empty list
+#         """
+#
+#         res = []
+#
+#         if filename:
+#             path = Path(filename)
+#
+#             if path.exists() and path.is_file() and path.stat().st_size > 0:
+#                 res = func(filename)
+#
+#         return res
+#
+#     return wrapper
