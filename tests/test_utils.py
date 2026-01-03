@@ -1,197 +1,258 @@
 """Tests for module utils.py"""
 
-
+import pytest
+import json
+from unittest.mock import Mock, patch, mock_open, MagicMock
 from pathlib import Path
-from unittest.mock import Mock, mock_open, patch
+from utils import read_json_file
 
-from src.utils import read_json_file
+# Test data
+VALID_JSON_LIST = '[{"id": 1, "name": "test1"}, {"id": 2, "name": "test2"}]'
+VALID_JSON_EMPTY_LIST = '[]'
+VALID_JSON_COMPLEX = '[{"id": 1, "data": {"nested": "value"}, "list": [1, 2, 3]}]'
+INVALID_JSON_NOT_LIST = '{"id": 1, "name": "test"}'
+INVALID_JSON_SYNTAX = '[{"id": 1, name: "test"}]'  # missing quotes
 
-# Mock for PATHS["data"]
-mock_data_path = Mock(spec=Path)
-mock_data_path.mkdir = Mock()
-mock_data_path.__truediv__ = Mock(return_value=Path("/mock/data/path/test.json"))
 
-
-# Mock for get_data_path
-def mock_get_data_path(filename: str) -> Path:
+# Fixtures
+@pytest.fixture
+def mock_get_data_path():
     """Mock для get_data_path"""
-    mock_path = Mock()
-    mock_path.exists = Mock()
-    mock_path.is_file = Mock()
-    mock_path.stat = Mock()
-    return mock_path
+
+    def _mock_get_data_path(filename: str) -> Path:
+        mock_path = Mock(spec=Path)
+        mock_path.exists = Mock()
+        mock_path.is_file = Mock()
+        mock_path.stat = Mock()
+        mock_path.__str__ = Mock(return_value=f"/mock/path/{filename}")
+        return mock_path
+
+    return _mock_get_data_path
+
+
+@pytest.fixture
+def mock_logger():
+    """Mock для logger"""
+    with patch('utils.logger') as mock_logger:
+        yield mock_logger
 
 
 # Valid cases
-
-
-# Edge cases
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_json_not_list(mock_get_data_path):
-    """Test when JSON is valid but not a list (should return empty list)"""
-    json_content = '{"id": 1, "name": "test"}'
-
-    mock_path = mock_get_data_path("not_list.json")
+@patch('utils.get_data_path')
+def test_read_json_file_valid_list(mock_get_data_path, mock_logger):
+    """Test reading valid JSON file with list"""
+    # Setup mock path
+    mock_path = Mock(spec=Path)
     mock_path.exists.return_value = True
     mock_path.is_file.return_value = True
-    mock_path.stat.return_value = Mock(st_size=100)
+    mock_stat = Mock()
+    mock_stat.st_size = 100
+    mock_path.stat.return_value = mock_stat
+    mock_get_data_path.return_value = mock_path
 
-    with patch('builtins.open', mock_open(read_data=json_content)):
-        result = read_json_file("not_list.json")
+    # Mock file reading
+    with patch('builtins.open', mock_open(read_data=VALID_JSON_LIST)):
+        result = read_json_file("valid.json")
+
+        # Verify calls
+        mock_get_data_path.assert_called_once_with("valid.json")
+        mock_path.exists.assert_called_once()
+        mock_path.is_file.assert_called_once()
+        mock_path.stat.assert_called_once()
+
+        # Verify result
+        assert result == [{"id": 1, "name": "test1"}, {"id": 2, "name": "test2"}]
+        assert isinstance(result, list)
+        assert len(result) == 2
+
+        # Verify logging
+        mock_logger.debug.assert_called()
+        mock_logger.info.assert_called()
+        mock_logger.error.assert_not_called()
+        mock_logger.critical.assert_not_called()
+
+
+@patch('utils.get_data_path')
+def test_read_json_file_complex_structure(mock_get_data_path, mock_logger):
+    """Test reading JSON with complex nested structure"""
+    mock_path = Mock(spec=Path)
+    mock_path.exists.return_value = True
+    mock_path.is_file.return_value = True
+    mock_stat = Mock()
+    mock_stat.st_size = 100
+    mock_path.stat.return_value = mock_stat
+    mock_get_data_path.return_value = mock_path
+
+    with patch('builtins.open', mock_open(read_data=VALID_JSON_COMPLEX)):
+        result = read_json_file("complex.json")
+
+        assert result == [{"id": 1, "data": {"nested": "value"}, "list": [1, 2, 3]}]
+        assert isinstance(result[0]['data'], dict)
+        assert isinstance(result[0]['list'], list)
+
+
+@patch('utils.get_data_path')
+def test_read_json_file_empty_list(mock_get_data_path, mock_logger):
+    """Test reading JSON file with empty list"""
+    mock_path = Mock(spec=Path)
+    mock_path.exists.return_value = True
+    mock_path.is_file.return_value = True
+    mock_stat = Mock()
+    mock_stat.st_size = 100
+    mock_path.stat.return_value = mock_stat
+    mock_get_data_path.return_value = mock_path
+
+    with patch('builtins.open', mock_open(read_data=VALID_JSON_EMPTY_LIST)):
+        result = read_json_file("empty_list.json")
 
         assert result == []
         assert isinstance(result, list)
 
-
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_file_not_exists(mock_get_data_path):
-    """Test when file does not exist"""
-    mock_path = mock_get_data_path("nonexistent.json")
-    mock_path.exists.return_value = False
-
-    result = read_json_file("nonexistent.json")
-
-    mock_get_data_path.assert_called_once_with("nonexistent.json")
-    mock_path.is_file.assert_not_called()  # is_file() is not called
-    mock_path.stat.assert_not_called()
-
-    assert result == []
-
-
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_path_is_directory(mock_get_data_path):
-    """Test when path is a directory, not a file"""
-    mock_path = mock_get_data_path("directory/")
-    mock_path.exists.return_value = True
-    mock_path.is_file.return_value = False
-
-    result = read_json_file("directory/")
-
-    mock_path.stat.assert_not_called()  # stat() is not called if is not file
-
-    assert result == []
-
-
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_empty_file(mock_get_data_path):
-    """Test when file exists but is empty (size = 0)"""
-    mock_path = mock_get_data_path("empty.txt")
-    mock_path.exists.return_value = True
-    mock_path.is_file.return_value = True
-    mock_path.stat.return_value = Mock(st_size=0)
-
-    result = read_json_file("empty.txt")
-
-    assert result == []
-
-
-def test_read_json_file_none_filename():
-    """Test with None filename"""
-    result = read_json_file(None)
-    assert result == []
-
-
-def test_read_json_file_non_string_filename():
-    """Test with non-string filename (e.g., integer)"""
-    result = read_json_file(123)
-    assert result == []
+        # Should log debug message about data being valid
+        mock_logger.debug.assert_called_with("Data is valid")
 
 
 # Invalid cases
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_invalid_json_syntax(mock_get_data_path):
-    """Test reading file with invalid JSON syntax"""
-    invalid_json = '[{"id": 1, "name": test}]'  # Missing quotes around "test"
-
-    mock_path = mock_get_data_path("invalid_syntax.json")
+@patch('utils.get_data_path')
+def test_read_json_file_invalid_json_syntax(mock_get_data_path, mock_logger):
+    """Test when JSON has syntax errors"""
+    mock_path = Mock(spec=Path)
     mock_path.exists.return_value = True
     mock_path.is_file.return_value = True
-    mock_path.stat.return_value = Mock(st_size=100)
+    mock_stat = Mock()
+    mock_stat.st_size = 100
+    mock_path.stat.return_value = mock_stat
+    mock_get_data_path.return_value = mock_path
 
-    with patch('builtins.open', mock_open(read_data=invalid_json)):
-        result = read_json_file("invalid_syntax.json")
+    with patch('builtins.open', mock_open(read_data=INVALID_JSON_SYNTAX)):
+        result = read_json_file("invalid.json")
 
         assert result == []
+        # Should log critical error
+        mock_logger.critical.assert_called()
 
 
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_empty_string_file(mock_get_data_path):
-    """Test reading completely empty file (empty string)"""
-    mock_path = mock_get_data_path("empty.json")
-    mock_path.exists.return_value = True
-    mock_path.is_file.return_value = True
-    mock_path.stat.return_value = Mock(st_size=100)
-
-    with patch('builtins.open', mock_open(read_data='')):
-        result = read_json_file("empty.json")
-
-        assert result == []
-
-
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_io_error_reading(mock_get_data_path):
-    """Test when file reading causes IOError"""
-    mock_path = mock_get_data_path("protected.json")
-    mock_path.exists.return_value = True
-    mock_path.is_file.return_value = True
-    mock_path.stat.return_value = Mock(st_size=100)
-
-    with patch('builtins.open') as mock_open_file:
-        mock_open_file.side_effect = IOError("Permission denied")
-
-        result = read_json_file("protected.json")
-
-        assert result == []
-
-
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_stat_exception(mock_get_data_path):
-    """Test when stat() raises an exception"""
-    mock_path = mock_get_data_path("protected.txt")
-    mock_path.exists.return_value = True
-    mock_path.is_file.return_value = True
-    mock_path.stat.side_effect = OSError("Permission denied")
-
-    result = read_json_file("protected.txt")
+# Edge cases
+def test_read_json_file_none_filename(mock_logger):
+    """Test with None filename"""
+    result = read_json_file(None)
 
     assert result == []
+    mock_logger.error.assert_called_with(
+        "No arguments have been given or given arguments None are invalid. Returning an empty list"
+    )
 
 
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_is_file_exception(mock_get_data_path):
-    """Test when is_file() raises an exception"""
-    mock_path = mock_get_data_path("error.txt")
-    mock_path.exists.return_value = True
-    mock_path.is_file.side_effect = OSError("Filesystem error")
-
-    result = read_json_file("error.txt")
+def test_read_json_file_non_string_filename(mock_logger):
+    """Test with non-string filename"""
+    result = read_json_file(123)
 
     assert result == []
+    mock_logger.error.assert_called_with(
+        "No arguments have been given or given arguments 123 are invalid. Returning an empty list"
+    )
 
 
-@patch('utils.get_data_path', side_effect=mock_get_data_path)
-def test_read_json_file_exists_exception(mock_get_data_path):
-    """Test when exists() raises an exception"""
-    mock_path = mock_get_data_path("error.txt")
-    mock_path.exists.side_effect = OSError("Filesystem error")
+@patch('utils.get_data_path')
+def test_read_json_file_empty_string_filename(mock_get_data_path, mock_logger):
+    """Test with empty string filename"""
+    mock_path = Mock(spec=Path)
+    mock_path.exists.return_value = False  # Empty string path doesn't exist
+    mock_get_data_path.return_value = mock_path
 
-    result = read_json_file("error.txt")
-
-    assert result == []
-
-
-# Test specific cases without decorator dependency
-def test_read_json_file_empty_string():
-    """Test with empty string filename (edge case)"""
     result = read_json_file("")
 
-    assert isinstance(result, list)
-
-
-# Test that function handles missing get_data_path gracefully
-@patch('utils.get_data_path', side_effect=Exception("Module not found"))
-def test_read_json_file_get_data_path_exception(mock_get_data_path):
-    """Test when get_data_path itself raises an exception"""
-
-    result = read_json_file("test.json")
     assert result == []
+    mock_logger.error.assert_called_with(
+        'JSON-file "" does not exist or is empty. Returning an empty list'
+    )
+
+
+@patch('utils.get_data_path')
+def test_read_json_file_file_not_exists(mock_get_data_path, mock_logger):
+    """Test when file doesn't exist"""
+    mock_path = Mock(spec=Path)
+    mock_path.exists.return_value = False
+    mock_get_data_path.return_value = mock_path
+
+    result = read_json_file("nonexistent.json")
+
+    assert result == []
+    mock_path.is_file.assert_not_called()
+    mock_path.stat.assert_not_called()
+    mock_logger.error.assert_called()
+
+
+@patch('utils.get_data_path')
+def test_read_json_file_path_is_directory(mock_get_data_path, mock_logger):
+    """Test when path is a directory, not a file"""
+    mock_path = Mock(spec=Path)
+    mock_path.exists.return_value = True
+    mock_path.is_file.return_value = False
+    mock_get_data_path.return_value = mock_path
+
+    result = read_json_file("directory/")
+
+    assert result == []
+    mock_path.stat.assert_not_called()
+    mock_logger.error.assert_called()
+
+
+@patch('utils.get_data_path')
+def test_read_json_file_empty_file(mock_get_data_path, mock_logger):
+    """Test when file exists but is empty"""
+    mock_path = Mock(spec=Path)
+    mock_path.exists.return_value = True
+    mock_path.is_file.return_value = True
+    mock_stat = Mock()
+    mock_stat.st_size = 0  # Empty file
+    mock_path.stat.return_value = mock_stat
+    mock_get_data_path.return_value = mock_path
+
+    result = read_json_file("empty.json")
+
+    assert result == []
+    mock_logger.error.assert_called()
+
+
+# Parameterized tests
+@pytest.mark.parametrize("json_content,expected_result", [
+    (VALID_JSON_LIST, [{"id": 1, "name": "test1"}, {"id": 2, "name": "test2"}]),
+    (VALID_JSON_EMPTY_LIST, []),
+    (VALID_JSON_COMPLEX, [{"id": 1, "data": {"nested": "value"}, "list": [1, 2, 3]}]),
+])
+@patch('utils.get_data_path')
+def test_read_json_file_valid_cases_parameterized(mock_get_data_path, json_content, expected_result, mock_logger):
+    """Parameterized test for valid JSON cases"""
+    mock_path = Mock(spec=Path)
+    mock_path.exists.return_value = True
+    mock_path.is_file.return_value = True
+    mock_stat = Mock()
+    mock_stat.st_size = 100
+    mock_path.stat.return_value = mock_stat
+    mock_get_data_path.return_value = mock_path
+
+    with patch('builtins.open', mock_open(read_data=json_content)):
+        result = read_json_file("test.json")
+
+        assert result == expected_result
+
+
+@pytest.mark.parametrize("filename,expected_error_log", [
+    (None, "No arguments have been given or given arguments None are invalid"),
+    (123, "No arguments have been given or given arguments 123 are invalid"),
+    ("", 'JSON-file "" does not exist or is empty'),
+])
+def test_read_json_file_invalid_parameters(filename, expected_error_log, mock_logger):
+    """Parameterized test for invalid parameters"""
+    if isinstance(filename, str) and filename == "":
+        with patch('utils.get_data_path') as mock_get_data_path:
+            mock_path = Mock(spec=Path)
+            mock_path.exists.return_value = False
+            mock_get_data_path.return_value = mock_path
+            result = read_json_file(filename)
+    else:
+        result = read_json_file(filename)
+
+    assert result == []
+    mock_logger.error.assert_called_with(f"{expected_error_log}. Returning an empty list")
