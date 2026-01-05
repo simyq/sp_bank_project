@@ -3,6 +3,7 @@ Module with decorators, unused decorator open_file_safely may be useful for work
 """
 
 from functools import wraps
+
 # from pathlib import Path
 from typing import Any, Callable, Optional
 
