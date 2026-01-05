@@ -1,9 +1,11 @@
 """Tests for module utils.py"""
 
-import pytest
 import json
-from unittest.mock import Mock, patch, mock_open, MagicMock
 from pathlib import Path
+from unittest.mock import MagicMock, Mock, mock_open, patch
+
+import pytest
+
 from utils import read_json_file
 
 # Test data

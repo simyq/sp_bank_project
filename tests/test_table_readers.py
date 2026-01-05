@@ -1,9 +1,10 @@
-import pytest
-import pandas as pd
-from unittest.mock import Mock, patch, MagicMock
 import io
-from table_readers import read_transactions_csv, read_transactions_excel
+from unittest.mock import MagicMock, Mock, patch
 
+import pandas as pd
+import pytest
+
+from table_readers import read_transactions_csv, read_transactions_excel
 
 # Test data
 CSV_CONTENT = """id;state;date;amount;currency_name;currency_code;from;to;description
