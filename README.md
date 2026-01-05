@@ -7,7 +7,7 @@ Console program for working with different data, connected with bank operations 
 
 ### [Main](main.py) — main module of the program, uses inputs into console for interacting with user
 
-### [Src](src/) — directory for used modules
+### [Src](src/) — directory for modules
 - [Config](src/config.py) — Currently contains all paths (directories of the project) and functions for getting them
 - [Masks](src/masks.py) — Module with functions for hiding personal bank data (credit card number and bank account). Uses logging (hiding sensitive data)
 - [Processing](src/processing.py) — Module for filtering transactions by state and sorting them by date
@@ -17,18 +17,19 @@ Additionally has function for making date formatting
 Also contains generator for creating card number
 (Might be upgraded for creating Visa, Maestro and other types of cards with locked first numbers)
 (Also might be updated by list (or file) with cards, that already exist)
-Unused function in comments at the end of the module
-might be used to work with string format input for card number generating
-- [Decorators](src/decorators.py) — Module with decorators
+Unused function in comments at the end of the module might be used to work with string format input for card number generating
+- [Decorators](src/decorators.py) — Module with decorators.
+Unused decorator might be useful for opening files
 - [Utils](src/utils.py) — Module for reading and working with transactions in JSON-format. Uses logging
 - [External_api](src/external_api.py) — Module for requests, converts given transaction's amount to RUB
 - [Table_readers](src/table_readers.py) — Module for reading info about transactions if it is given as a table (csv or excel formats)
+- [Operations](src/operations.py) — Module for searching and counting operations (by categories) within json-like bank operations data
 
 ### [Logs](logs/) — directory for logs
 Contains logs for 2 modules ([masks.py](src/masks.py) and [utils.py](src/utils.py))
 
 ### [Tests](tests/) — directory for tests
-- [conftest](tests/conftest.py)
+- [conftest](tests/conftest.py) — for fixtures
 - [test_masks](tests/test_masks.py)
 - [test_processing](tests/test_processing.py)
 - [test_widget](tests/test_widget.py)
@@ -39,7 +40,7 @@ Contains logs for 2 modules ([masks.py](src/masks.py) and [utils.py](src/utils.p
 - [test_table_readers](tests/test_table_readers.py)
 - [test_config](tests/test_config.py)
 
-Test coverage — look "Code Coverage"
+Test coverage — look "Testing — Code Coverage"
 
 ### [Data](data/) — directory for operations data
 Contains different type of formats to work with (.xlsx, .json, .csv)
