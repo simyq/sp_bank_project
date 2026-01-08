@@ -12,7 +12,7 @@ def filter_by_state(list_with_dicts: list[dict], state: str = "EXECUTED") -> lis
     :return: filtered_list_by_state: items from primary list if they have given state as value in dictionary['state']
     """
 
-    filtered_list_by_state = [item for item in list_with_dicts if item["state"] == state]
+    filtered_list_by_state = [item for item in list_with_dicts if item.get("state") == state]
 
     return filtered_list_by_state
 

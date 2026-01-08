@@ -16,7 +16,7 @@ def process_bank_search(data: list[dict], search: str) -> list[dict]:
 
     for operation in data:
 
-        if operation:  # checks if dictionary or list are empty or not
+        if operation:  # checks if dictionary or list is empty or not
             operation_description = str(
                 operation.get("description")
             )  # str() here is used for handling None-type values (if there is no description)

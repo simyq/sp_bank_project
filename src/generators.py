@@ -19,7 +19,7 @@ def filter_by_currency(transactions: list[dict], currency: str) -> filter:
     """
 
     filtered_transactions = filter(
-        lambda trans: trans["operationAmount"]["currency"]["code"] == currency.upper(), transactions
+        lambda trans: trans.get("operationAmount").get("currency").get("code") == currency.upper(), transactions
     )
 
     return filtered_transactions
@@ -32,7 +32,7 @@ def get_transaction_descriptions(transactions: list[dict]) -> Generator:
     :return: Generator object: Generator with transactions descriptions
     """
 
-    description_generator = (transaction["description"] for transaction in transactions)
+    description_generator = (transaction.get("description") for transaction in transactions)
     yield from description_generator
 
 
