@@ -8,7 +8,7 @@ from typing import Any
 
 from masks import get_mask_account, get_mask_card_number
 
-credit_card_names = ["visa", "maestro", "mastercard", "белкарт", "мир"]
+credit_card_names = ["visa", "maestro", "mastercard", "белкарт", "мир", "discover", "american"]
 
 
 def mask_account_card(bank_data: Any) -> str:

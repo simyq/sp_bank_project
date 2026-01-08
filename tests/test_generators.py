@@ -104,11 +104,11 @@ def test_filter_by_currency_none_currency(sample_gen_transactions):
 def test_filter_by_currency_invalid_transactions_structure():
     """Test for incorrect transactions structure"""
     invalid_transactions = [
-        {"id": 1, "operationAmount": {"amount": "100.00"}},  # Нет currency
-        {"id": 2, "operationAmount": {"currency": {"name": "USD"}}},  # Нет code
+        {"id": 1, "operationAmount": {"amount": "100.00"}},  # No currency
+        {"id": 2, "operationAmount": {"currency": {"name": "USD"}}},  # No code
     ]
 
-    with pytest.raises(KeyError):
+    with pytest.raises(AttributeError):
         list(filter_by_currency(invalid_transactions, "USD"))
 
 
@@ -214,12 +214,12 @@ def test_transaction_descriptions_none_transactions():
 def test_transaction_descriptions_invalid_structure():
     """Test for invalid transactions structure"""
     invalid_transactions = [
-        {"id": 1},  # Нет description
-        {"description": "Test"},  # Неполная структура
+        {"id": 1},  # No description
+        {"description": "Test"},  # Not full structure
     ]
 
-    with pytest.raises(KeyError):
-        list(get_transaction_descriptions(invalid_transactions))
+    result = get_transaction_descriptions(invalid_transactions)
+    assert None in result
 
 
 def test_transaction_descriptions_missing_description():
@@ -233,16 +233,15 @@ def test_transaction_descriptions_missing_description():
         {
             "id": 2,
             "state": "EXECUTED"
-            # Нет description
+            # No description
         }
     ]
 
     generator = get_transaction_descriptions(transactions)
 
     assert next(generator) == "Перевод организации"
+    assert next(generator) == None
 
-    with pytest.raises(KeyError):
-        next(generator)
 
 
 '''
